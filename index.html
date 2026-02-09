@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>A Surprise For You</title>
+    <link href="https://fonts.googleapis.com/css2?family=Charm:wght@700&family=Prompt:wght@300;500;700&display=swap" rel="stylesheet">
+    <style>
+        /* --- การตั้งค่าพื้นฐานและการเคลื่อนไหว --- */
+        :root {
+            --primary-color: #ff4d6d; /* สีชมพูเข้ม */
+            --secondary-color: #ff8fa3; /* สีชมพูอ่อน */
+            --accent-glow: rgba(255, 255, 255, 0.8); /* แสงเรืองรอง */
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Prompt', sans-serif;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            /* พื้นหลังไล่สีเคลื่อนไหวสุดนุ่มนวล */
+            background: linear-gradient(-45deg, #ff9a9e, #fad0c4, #fbc2eb, #a18cd1);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* --- การ์ดคริสตัล (Ultra Glassmorphism) --- */
+        .crystal-card {
+            position: relative;
+            z-index: 10;
+            background: rgba(255, 255, 255, 0.25); /* โปร่งใสมากขึ้น */
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.2); /* เงาฟุ้ง */
+            backdrop-filter: blur(20px); /* เบลอฉากหลังหนักๆ */
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.4); /* ขอบขาวบางๆ */
+            padding: 60px 40px;
+            text-align: center;
+            width: 90%;
+            max-width: 450px;
+            transition: all 0.8s cubic-bezier(0.23, 1, 0.32, 1); /* การขยายตัวที่นุ่มนวล */
+            overflow: hidden;
+        }
+
+        /* แสงสะท้อนบนการ์ด */
+        .crystal-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -50%; width: 100%; height: 100%;
+            background: linear-gradient(to right, transparent, rgba(255,255,255,0.3), transparent);
+            transform: skewX(-25deg);
+            animation: shine 3s infinite;
+            pointer-events: none;
+        }
+
+        @keyframes shine { 0% {left: -100%;} 20% {left: 100%;} 100% {left: 100%;} }
+
+        h1 {
+            color: #fff;
+            font-weight: 700;
+            font-size: 32px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 15px;
+        }
+
+        p {
+            color: rgba(255,255,255,0.9);
+            font-size: 18px;
+            font-weight: 300;
+            margin-bottom: 40px;
+        }
+
+        /* --- ปุ่มกดสุดหรู --- */
+        .btn-premium {
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            border: none;
+            padding: 18px 50px;
+            color: white;
+            font-family: 'Prompt', sans-serif;
+            font-size: 20px;
+            font-weight: 700;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 10px 30px -10px var(--primary-color);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        /* เอฟเฟกต์แสงวิบวับบนปุ่ม */
+        .btn-premium::after {
+            content: '';
+            position: absolute;
+            top: -50%; right: -50%; bottom: -50%; left: -50%;
+            background: linear-gradient(to bottom, rgba(229, 172, 142, 0), rgba(255,255,255,0.5) 50%, rgba(229, 172, 142, 0));
+            transform: rotateZ(60deg) translate(-5em, 7.5em);
+            animation: sheen 3s infinite;
+        }
+
+        @keyframes sheen {
+            100% { transform: rotateZ(60deg) translate(1em, -9em); }
+        }
+
+        .btn-premium:hover {
+            transform: scale(1.05) translateY(-3px);
+            box-shadow: 0 20px 40px -10px var(--primary-color);
+        }
+
+        /* --- ส่วนเฉลย (The Reveal) --- */
+        .reveal-container {
+            display: none; /* ซ่อนไว้ก่อน */
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* ดอกกุหลาบยักษ์เรืองแสง */
+        .giant-rose {
+            font-size: 150px;
+            line-height: 1;
+            margin-bottom: 20px;
+            filter: drop-shadow(0 0 20px var(--secondary-color));
+            animation: bloom 1.2s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+            opacity: 0;
+        }
+
+        /* ข้อความบอกรัก (ใช้ฟอนต์ Charm) */
+        .love-script {
+            font-family: 'Charm', cursive;
+            font-size: 60px;
+            color: #fff;
+            text-shadow: 0 2px 10px rgba(255, 77, 109, 0.6);
+            margin-bottom: 10px;
+            opacity: 0;
+            animation: textFadeIn 1s ease 0.5s forwards;
+        }
+
+        .love-subtext {
+            font-size: 20px;
+            color: rgba(255,255,255,0.85);
+            opacity: 0;
+            animation: textFadeIn 1s ease 0.8s forwards;
+        }
+
+        /* --- Animations Keyframes --- */
+        @keyframes bloom {
+            0% { opacity: 0; transform: scale(0) rotate(-30deg); filter: blur(20px); }
+            100% { opacity: 1; transform: scale(1) rotate(0deg); filter: blur(0); drop-shadow(0 0 30px var(--primary-color)); }
+        }
+
+        @keyframes textFadeIn {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Container สำหรับเอฟเฟกต์ระเบิด */
+        #particle-container {
+            position: absolute;
+            top: 50%; left: 50%;
+            width: 1px; height: 1px;
+            pointer-events: none;
+            z-index: 5;
+        }
+        .particle { position: absolute; }
+
+    </style>
+</head>
+<body>
+
+    <div id="particle-container"></div>
+
+    <div class="crystal-card" id="mainCard">
+        <div id="question-box">
+            <h1>มีบางอย่างจะให้... 🤫</h1>
+            <p>พร้อมหรือยัง? หายใจเข้าลึกๆ แล้วกดปุ่มเลย</p>
+            <button class="btn-premium" onclick="startReveal()">เปิดของขวัญ</button>
+        </div>
+
+        <div id="reveal-box" class="reveal-container">
+            <div class="giant-rose">🌹</div>
+            <div class="love-script">รักนะพิ้น</div>
+            <p class="love-subtext">ดอกไม้นี้... แทนหัวใจพี่นะ <br> ❤️✨💖✨❤️</p>
+        </div>
+    </div>
+
+    <script>
+        function startReveal() {
+            const card = document.getElementById('mainCard');
+            const questionBox = document.getElementById('question-box');
+            const revealBox = document.getElementById('reveal-box');
+            const button = document.querySelector('.btn-premium');
+
+            // 1. ปุ่มหายไป
+            button.style.transform = "scale(0)";
+            button.style.opacity = "0";
+            
+            // 2. ซ่อนข้อความคำถาม
+            setTimeout(() => {
+                questionBox.style.opacity = "0";
+                questionBox.style.transition = "opacity 0.5s ease";
+            }, 200);
+
+            // 3. เริ่มกระบวนการแปลงร่างการ์ด
+            setTimeout(() => {
+                questionBox.style.display = 'none';
+                revealBox.style.display = 'flex';
+
+                // ขยายการ์ดให้ใหญ่ขึ้นเล็กน้อยเพื่อความอลังการ
+                card.style.transform = "scale(1.1)";
+                card.style.padding = "70px 40px";
+                card.style.background = "rgba(255, 255, 255, 0.35)"; // เพิ่มความสว่างขึ้นอีกนิด
+
+                // เรียกเอฟเฟกต์พลุ
+                explodeParticles();
+            }, 600);
+        }
+
+        // ฟังก์ชันสร้างเอฟเฟกต์ระเบิดหัวใจ (Particle Explosion)
+        function explodeParticles() {
+            const container = document.getElementById('particle-container');
+            const items = ['❤️', '💖', '✨', '🌹', '🌸'];
+            const particleCount = 60; // จำนวนไอเท็มที่ระเบิดออกมา
+
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
+                particle.innerHTML = items[Math.floor(Math.random() * items.length)];
+                container.appendChild(particle);
+
+                // คำนวณทิศทางการระเบิดแบบสุ่มรอบทิศทาง
+                const angle = Math.random() * Math.PI * 2; // มุม 0-360 องศา
+                const force = Math.random() * 150 + 50; // แรงระเบิด (ระยะทาง)
+                const tx = Math.cos(angle) * force;
+                const ty = Math.sin(angle) * force;
+                const rotation = Math.random() * 720 - 360; // หมุนติ้วๆ
+
+                // สร้าง Animation ด้วย Web Animations API
+                particle.animate([
+                    { transform: 'translate(0,0) rotate(0deg) scale(0.5)', opacity: 1 },
+                    { transform: `translate(${tx}px, ${ty}px) rotate(${rotation}deg) scale(${Math.random() + 0.5})`, opacity: 0 }
+                ], {
+                    duration: Math.random() * 1500 + 1000, // 1-2.5 วินาที
+                    easing: 'cubic-bezier(0.25, 1, 0.5, 1)', // ระเบิดเร็วแล้วค่อยๆ ช้าลง
+                    fill: 'forwards'
+                });
+
+                // ลบ element เมื่อเล่นเสร็จ
+                setTimeout(() => { particle.remove(); }, 2500);
+            }
+        }
+    </script>
+</body>
+</html>
